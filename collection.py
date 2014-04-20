@@ -24,3 +24,8 @@ def getDocument(filename,sub_dir):
 	with open (os.path.join(sub_dir, filename), "r") as myfile:
 		data=myfile.read().replace('\n', '')
 	return data
+
+def getFilenameById(search_id,dict):
+	for filename, assignedID in dict.iteritems():
+	    if search_id == assignedID:
+	        return filename

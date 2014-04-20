@@ -1,10 +1,17 @@
 from __future__ import division
+import operator
 import math
 from collection import *
 from nlp import *
+from collections import OrderedDict
+import collections
 
 #set the subdirectory where the module will search for files
 sub_dir="library"
+query="collections file text"
+print ''
+print 'The query is "',query,'"'
+query = nlp(query)
 
 list_of_terms = {}
 total_documents = 0
@@ -53,13 +60,24 @@ for term, value in list_of_terms.iteritems():
 		else:
 			inverse_term_freq.update({term:{docID:idf_value}})
 			tfidf_scores.update({term:{docID:tfidf}})
-		
-		# print term
-		# inverse_term_freq[term]
-		# print idf_value
 
-# print list_of_terms
-# print ''
-# print inverse_term_freq
-# print ''
-print tfidf_scores
+# print tfidf_scores
+
+'''
+have to score the documents based on the query
+'''
+
+scores = {}
+for filename in list_of_filenames:
+	scores.update({ids[filename]:0})
+
+for word in query:
+	if tfidf_scores.has_key(word):
+		for docID, tf_value in tfidf_scores[word].iteritems():
+			scores[docID]+=tf_value
+
+sorted_scores = OrderedDict(sorted(scores.items(), key=lambda x: x[1], reverse=True))
+print ''
+print "Displaying results in relevance order"
+for docID, score in sorted_scores.iteritems():
+	print getFilenameById(docID,ids)," : ",score

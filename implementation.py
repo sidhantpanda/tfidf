@@ -1,10 +1,65 @@
+from __future__ import division
+import math
 from collection import *
+from nlp import *
+
+#set the subdirectory where the module will search for files
+sub_dir="library"
+
+list_of_terms = {}
+total_documents = 0
+inverse_term_freq = {}
+tfidf_scores = {}
 
 #collect all the filenames
-listof = []
-listof = findall()
-print listof
+list_of_filenames = findall(sub_dir)
+# print list_of_filenames
+total_documents=len(list_of_filenames)
 
 #assign them ids
-ids=assignids(listof)
-print ids
+ids=assignids(list_of_filenames)
+# print ids	
+
+for filename in list_of_filenames:
+	data = getDocument(filename,sub_dir)
+	# print data
+	nlp_list = nlp(data)
+	for term in nlp_list:
+		if list_of_terms.has_key(term):
+			if list_of_terms[term].has_key(ids[filename]):
+				list_of_terms[term][ids[filename]]=list_of_terms[term][ids[filename]]+1
+			else:
+				list_of_terms[term].update({ids[filename]:1})
+		else:
+			list_of_terms.update({term:{ids[filename]:1}})
+
+'''
+list_of_terms now is a dictionary which contains term frequencies in the documents
+the format for the same is :
+{term:{docID:frequency}}
+'''
+for term, value in list_of_terms.iteritems():
+	for docID,frequency in value.iteritems():
+		inside = float(total_documents/frequency)
+		idf_value=math.log10(1+inside)
+		tfidf = idf_value*frequency
+		if inverse_term_freq.has_key(term):
+			if inverse_term_freq[term].has_key(docID):
+				inverse_term_freq[term][docID]=idf_value
+				tfidf_scores[term][docID]=tfidf
+			else:
+				inverse_term_freq[term].update({docID:idf_value})
+				tfidf_scores[term].update({docID:tfidf})
+		else:
+			inverse_term_freq.update({term:{docID:idf_value}})
+			tfidf_scores.update({term:{docID:tfidf}})
+		
+		# print term
+		# inverse_term_freq[term]
+		# print idf_value
+
+# print list_of_terms
+# print ''
+# print inverse_term_freq
+# print ''
+print tfidf_scores

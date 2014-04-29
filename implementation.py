@@ -8,7 +8,7 @@ import collections
 
 #set the subdirectory where the module will search for files
 sub_dir="library"
-query="collections file text"
+query="heard that the Osmington school"
 print ''
 print 'The query is "',query,'"'
 query = nlp(query)
